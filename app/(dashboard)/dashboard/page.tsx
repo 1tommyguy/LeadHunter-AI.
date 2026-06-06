@@ -109,7 +109,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/dashboard/leads/finder">
+          <Link href="/leads/finder">
             <Search className="mr-2 h-4 w-4" />
             Find Leads
           </Link>
@@ -137,7 +137,7 @@ export default async function DashboardPage() {
               </div>
               {subscription.plan === "FREE" && (
                 <Button size="sm" asChild>
-                  <Link href="/dashboard/subscription">Upgrade</Link>
+                  <Link href="/subscription">Upgrade</Link>
                 </Button>
               )}
             </div>
@@ -184,7 +184,7 @@ export default async function DashboardPage() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Recent Leads</CardTitle>
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/dashboard/leads">
+            <Link href="/leads">
               View all
               <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
@@ -199,7 +199,7 @@ export default async function DashboardPage() {
                 Start by finding leads in your target cities
               </p>
               <Button className="mt-4" asChild>
-                <Link href="/dashboard/leads/finder">
+                <Link href="/leads/finder">
                   <Search className="mr-2 h-4 w-4" />
                   Find Your First Leads
                 </Link>

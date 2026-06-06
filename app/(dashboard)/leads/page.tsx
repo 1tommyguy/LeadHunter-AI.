@@ -98,7 +98,7 @@ export default function LeadsPage() {
           <p className="text-gray-600 mt-1">{total} leads total</p>
         </div>
         <Button asChild>
-          <Link href="/dashboard/leads/finder">Find More Leads</Link>
+          <Link href="/leads/finder">Find More Leads</Link>
         </Button>
       </div>
 
@@ -184,7 +184,7 @@ export default function LeadsPage() {
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <Button variant="ghost" size="icon" asChild>
-                      <Link href={`/dashboard/crm/${lead.id}`}><Eye className="h-4 w-4" /></Link>
+                      <Link href={`/crm/${lead.id}`}><Eye className="h-4 w-4" /></Link>
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => deleteLead(lead.id)} className="text-red-500 hover:text-red-600">
                       <Trash2 className="h-4 w-4" />

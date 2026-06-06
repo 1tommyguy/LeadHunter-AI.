@@ -64,7 +64,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
     setLoading(true);
     try {
       const res = await fetch(`/api/leads/${id}`);
-      if (!res.ok) { router.push("/dashboard/crm"); return; }
+      if (!res.ok) { router.push("/crm"); return; }
       const data = await res.json();
       setLead(data);
       // Pre-fill message
@@ -180,7 +180,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/dashboard/crm"><ArrowLeft className="h-4 w-4 mr-1" />Back to CRM</Link>
+          <Link href="/crm"><ArrowLeft className="h-4 w-4 mr-1" />Back to CRM</Link>
         </Button>
       </div>
 

@@ -32,5 +32,5 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({ success: true, redirectUrl: "/dashboard/subscription?success=true" });
+  return NextResponse.json({ success: true, redirectUrl: "/subscription?success=true" });
 }

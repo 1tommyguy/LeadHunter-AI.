@@ -82,7 +82,7 @@ export default function FollowUpsPage() {
           </div>
           <div className="flex gap-2 flex-shrink-0">
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/dashboard/crm/${fu.lead}`}><Eye className="h-4 w-4" /></Link>
+              <Link href={`/crm/${fu.lead}`}><Eye className="h-4 w-4" /></Link>
             </Button>
             {!fu.completed && (
               <Button size="sm" onClick={() => complete(fu.id)}>

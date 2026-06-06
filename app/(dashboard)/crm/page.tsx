@@ -134,7 +134,7 @@ export default function CRMPage() {
                     </div>
                     <div className="flex gap-1">
                       <Button variant="outline" size="sm" className="text-xs h-7 flex-1" asChild>
-                        <Link href={`/dashboard/crm/${lead.id}`}><Eye className="h-3 w-3 mr-1" />View</Link>
+                        <Link href={`/crm/${lead.id}`}><Eye className="h-3 w-3 mr-1" />View</Link>
                       </Button>
                       <Select value={lead.status} onValueChange={v => updateStatus(lead.id, v)}>
                         <SelectTrigger className="h-7 text-xs w-24">
@@ -181,7 +181,7 @@ export default function CRMPage() {
                       </SelectContent>
                     </Select>
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/dashboard/crm/${lead.id}`}><Eye className="h-4 w-4" /></Link>
+                      <Link href={`/crm/${lead.id}`}><Eye className="h-4 w-4" /></Link>
                     </Button>
                   </div>
                 </div>
