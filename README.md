@@ -1,187 +1,226 @@
-# LeadHunter AI
+<div align="center">
 
-> AI-powered lead generation platform for web professionals
+# 🎯 LeadHunter AI
 
-LeadHunter AI helps freelancers, agencies, and web developers find local businesses that need web services, score them by opportunity, generate personalized outreach, and manage the entire client pipeline — all in one place.
+### Find businesses that need your web services — automatically.
 
-**[Visit the live app →](https://lead-hunter-ai-yzis.vercel.app)**
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20App-blue?style=for-the-badge)](https://lead-hunter-ai-yzis.vercel.app)
+[![Deploy with Vercel](https://img.shields.io/badge/Deploy-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/new/clone?repository-url=https://github.com/1tommyguy/LeadHunter-AI.)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-99%25-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 
----
+<br/>
 
-## What It Does
+> LeadHunter AI is a full-stack SaaS platform that helps freelancers, agencies, and web developers **discover local businesses without websites**, score them by opportunity, generate personalized outreach messages, and close more clients — all from one dashboard.
 
-**Find leads** — Search any city and business category. The platform discovers local businesses and automatically checks whether they have a website, how their mobile performance scores, and how they rank for SEO.
-
-**Score by opportunity** — Every lead gets a 0–100 score based on digital presence gaps. A restaurant with no website in a major city scores higher than one with a modern site.
-
-**Generate outreach** — Personalized messages for four service types: Website Design, SEO, Digital Marketing, and Business Automation. Messages are saved as drafts and only send when you approve them.
-
-**Manage the pipeline** — A full CRM with Kanban and list views. Move leads through stages, add notes, schedule follow-ups, and track everything in one place.
-
-**Track performance** — Analytics dashboard with charts for leads by city, category, pipeline stage, and growth over time.
+</div>
 
 ---
 
-## Features
+## ✨ Key Features
 
-- Lead finder with city + category search
-- Automatic website, mobile, and SEO auditing
-- 0–100 lead opportunity scoring
-- Outreach message generator (4 templates)
-- Outreach queue with draft → approve → send workflow
-- CRM pipeline (Kanban + list view)
-- Lead detail pages with notes and activity
-- Follow-up scheduler with type labels (Call, Email, LinkedIn, Meeting)
-- Email campaign management
-- Analytics dashboard with Recharts
-- Subscription plan management
-- Email/password authentication
-- Google OAuth (enable by adding credentials)
-- Secure JWT sessions with NextAuth v5
+| | Feature | Description |
+|---|---|---|
+| 🔍 | **Lead Finder** | Search any city + business type to discover businesses needing web services |
+| 📊 | **AI Lead Scoring** | Automatic 0–100 opportunity score based on website gaps, mobile, and SEO |
+| ✉️ | **Outreach Generator** | Personalized messages for Website Design, SEO, Marketing & Automation |
+| 📋 | **CRM Pipeline** | Kanban + list view — New → Contacted → Replied → Qualified → Closed |
+| 🔔 | **Follow-Up System** | Schedule follow-ups (Call, Email, LinkedIn) with smart reminders |
+| 📈 | **Analytics** | Charts for leads by city, category, status, and growth over time |
+| 📣 | **Campaigns** | Create and manage outreach campaigns across your leads |
+| 🔐 | **Auth** | Secure email/password login + Google OAuth ready |
+| 💳 | **Subscription Plans** | Free / Starter / Pro / Agency plan management |
 
 ---
 
-## Tech Stack
+## 🚀 Live Demo
 
-- **Framework** — Next.js 15 (App Router)
-- **Language** — TypeScript
-- **Styling** — Tailwind CSS + ShadCN UI components
-- **Database** — PostgreSQL via Prisma ORM (compatible with Neon, Supabase, Railway)
-- **Auth** — NextAuth v5 with Credentials and Google providers
-- **Charts** — Recharts
-- **Testing** — Jest + React Testing Library
-- **Deployment** — Vercel
+**[→ Try it live at lead-hunter-ai-yzis.vercel.app](https://lead-hunter-ai-yzis.vercel.app)**
+
+Create a free account on the site, or use the pre-loaded demo account to explore all features instantly.
 
 ---
 
-## Deploy Your Own
+## 🛠 Tech Stack
 
-### 1. Database (free with Neon)
+```
+Next.js 15 (App Router)    →  Framework
+TypeScript                 →  Language
+Tailwind CSS + ShadCN UI   →  Styling & Components
+PostgreSQL + Prisma ORM    →  Database
+NextAuth v5                →  Authentication
+Recharts                   →  Analytics Charts
+Jest + RTL                 →  Testing
+Vercel                     →  Deployment
+Neon                       →  Managed PostgreSQL (free tier)
+```
 
-Create a free PostgreSQL database at [neon.tech](https://neon.tech) and copy the connection string.
+---
 
-### 2. One-click deploy to Vercel
+## ⚡ Deploy in 5 Minutes (Free)
+
+### Step 1 — Get a free database
+
+Sign up at [neon.tech](https://neon.tech) → New Project → copy your connection string.
+
+### Step 2 — Deploy to Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/1tommyguy/LeadHunter-AI.)
 
-Set these three environment variables during setup:
+Add these 3 environment variables:
 
+```bash
+DATABASE_URL      # your Neon PostgreSQL connection string
+NEXTAUTH_SECRET   # generate: openssl rand -base64 32
+NEXTAUTH_URL      # your Vercel app URL, e.g. https://myapp.vercel.app
 ```
-DATABASE_URL      → your Neon connection string
-NEXTAUTH_SECRET   → run: openssl rand -base64 32
-NEXTAUTH_URL      → your Vercel deployment URL (e.g. https://myapp.vercel.app)
-```
 
-### 3. Initialize the database
+### Step 3 — Load sample data
 
-After your first deploy, open this URL in your browser (replace the domain):
+Visit this URL once after your deploy (replace with your domain):
 
 ```
 https://your-app.vercel.app/api/seed?token=leadhunter-setup-2024
 ```
 
-This creates all tables and loads sample data so the app is immediately usable.
+**That's it — your app is live.** 🎉
 
 ---
 
-## Local Development
+## 💻 Local Development
 
 ```bash
+# 1. Clone the repo
 git clone https://github.com/1tommyguy/LeadHunter-AI.
 cd LeadHunter-AI.
+
+# 2. Install dependencies
 npm install --legacy-peer-deps
-cp .env.example .env        # fill in DATABASE_URL and NEXTAUTH_SECRET
+
+# 3. Set up environment variables
+cp .env.example .env
+# → fill in DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL
+
+# 4. Set up the database
 npx prisma generate
 npx prisma db push
 npm run db:seed
+
+# 5. Start the dev server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000) 🚀
 
 ---
 
-## Environment Variables
+## 🔑 Environment Variables
 
-| Variable | Required | Description |
-|---|---|---|
-| `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `NEXTAUTH_SECRET` | Yes | Random secret — `openssl rand -base64 32` |
-| `NEXTAUTH_URL` | Yes | Your app's public URL |
-| `GOOGLE_CLIENT_ID` | No | Enables Google OAuth login |
-| `GOOGLE_CLIENT_SECRET` | No | Enables Google OAuth login |
-| `SMTP_HOST` | No | Email sending (e.g. smtp.gmail.com) |
-| `SMTP_PORT` | No | SMTP port (typically 587) |
-| `SMTP_USER` | No | SMTP username |
-| `SMTP_PASS` | No | SMTP password |
-| `SMTP_FROM` | No | Sender email address |
+**Required to run:**
 
----
-
-## Project Structure
-
+```env
+DATABASE_URL="postgresql://..."        # PostgreSQL connection string
+NEXTAUTH_SECRET="..."                  # Random secret (openssl rand -base64 32)
+NEXTAUTH_URL="https://your-app.com"    # Your app's public URL
 ```
-app/
-├── (auth)/              # Login, register, password reset
-├── (dashboard)/         # All authenticated pages
-│   ├── dashboard/       # Overview with stats and activity
-│   ├── leads/           # Lead list with search and filters
-│   ├── leads/finder/    # Search businesses by city and type
-│   ├── outreach/queue/  # Manage outreach message queue
-│   ├── crm/             # Lead pipeline (Kanban + list)
-│   ├── crm/[id]/        # Lead detail — notes, follow-ups, outreach
-│   ├── campaigns/       # Email campaign management
-│   ├── followups/       # Follow-up tracker
-│   ├── analytics/       # Charts and reporting
-│   ├── settings/        # Profile, SMTP config, security
-│   └── subscription/    # Plan management
-├── api/                 # REST API endpoints
-└── page.tsx             # Public landing page
 
-components/
-├── ui/                  # Reusable UI primitives (Button, Card, Dialog, etc.)
-├── landing/             # Landing page sections
-└── layout/              # Sidebar and top navigation
+**Optional — unlock extra features:**
 
-lib/
-├── auth.ts              # NextAuth configuration
-├── lead-scorer.ts       # Scoring algorithm and outreach generator
-├── prisma.ts            # Database client singleton
-└── validations.ts       # Zod schemas for all forms and API inputs
+```env
+# Google OAuth (adds "Sign in with Google" button)
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
 
-prisma/
-├── schema.prisma        # Database schema
-└── seed.ts              # Sample data loader
+# Email sending via SMTP
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT="587"
+SMTP_USER=""
+SMTP_PASS=""
+SMTP_FROM="noreply@yourdomain.com"
 ```
 
 ---
 
-## Scripts
+## 📁 Project Structure
+
+```
+├── app/
+│   ├── (auth)/              # Login · Register · Password Reset
+│   ├── (dashboard)/         # All authenticated app pages
+│   │   ├── dashboard/       # Overview with stats + recent activity
+│   │   ├── leads/           # Lead list with search & filters
+│   │   ├── leads/finder/    # Discover businesses by city & type
+│   │   ├── outreach/queue/  # Approve & manage outreach messages
+│   │   ├── crm/             # Pipeline board + lead detail pages
+│   │   ├── campaigns/       # Email campaign management
+│   │   ├── followups/       # Follow-up tracker & reminders
+│   │   ├── analytics/       # Charts and reporting
+│   │   ├── settings/        # Profile, SMTP config, security
+│   │   └── subscription/    # Plan management
+│   ├── api/                 # REST API endpoints
+│   └── page.tsx             # Public landing page
+│
+├── components/
+│   ├── ui/                  # Button, Card, Dialog, Input, etc.
+│   ├── landing/             # Hero, Features, Pricing, FAQ
+│   └── layout/              # Sidebar + Top Navigation
+│
+├── lib/
+│   ├── auth.ts              # NextAuth config
+│   ├── lead-scorer.ts       # Scoring algorithm + outreach generator
+│   ├── prisma.ts            # Database client
+│   └── validations.ts       # Zod schemas
+│
+└── prisma/
+    ├── schema.prisma        # Full database schema
+    └── seed.ts              # Sample data
+```
+
+---
+
+## 🔒 Security
+
+- ✅ All dashboard routes protected — unauthenticated requests redirect to login
+- ✅ Zod validation on every API endpoint
+- ✅ Passwords hashed with bcryptjs (12 rounds)
+- ✅ Rate limiting on auth and search routes
+- ✅ Prisma parameterized queries — SQL injection safe
+- ✅ JWT sessions — no server-side session storage needed
+- ✅ Outreach messages require manual approval before sending
+
+---
+
+## 📜 Scripts
 
 ```bash
 npm run dev              # Start development server
 npm run build            # Production build
 npm run test             # Run test suite
-npm run test:coverage    # Coverage report
+npm run test:coverage    # Test coverage report
 npm run db:push          # Push schema to database
 npm run db:seed          # Load sample data
 npm run db:studio        # Open Prisma Studio GUI
-npm run type-check       # TypeScript validation
+npm run type-check       # TypeScript check
 ```
 
 ---
 
-## Security
+## 🤝 Contributing
 
-- Session-authenticated API routes — unauthenticated requests return 401
-- Zod validation on all inputs at API boundaries
-- bcryptjs password hashing (12 rounds)
-- Rate limiting on auth and search endpoints
-- Prisma parameterized queries prevent SQL injection
-- JWT tokens — no server-side session storage required
+Pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
-## License
+## 📄 License
 
-MIT — use it, fork it, build on it.
+[MIT](LICENSE) — free to use, fork, and build on.
+
+---
+
+<div align="center">
+
+Built with ❤️ for web professionals who want more clients.
+
+**[⭐ Star this repo](https://github.com/1tommyguy/LeadHunter-AI.)** if you find it useful!
+
+</div>
