@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { execSync } from "child_process";
+import { prisma } from "@/lib/prisma";
 
 export const maxDuration = 60;
 
@@ -9,18 +9,20 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Pass ?token=leadhunter-setup-2024" }, { status: 401 });
   }
 
-  const results: string[] = [];
-
   try {
-    const pushOutput = execSync("npx prisma db push --skip-generate --accept-data-loss", {
-      env: { ...process.env },
-      timeout: 50000,
-      encoding: "utf8",
+    // Verify DB is reachable and tables exist (created during build via prisma db push)
+    const userCount = await prisma.user.count();
+    return NextResponse.json({
+      success: true,
+      message: "Database is ready. Tables were created during Vercel build.",
+      userCount,
+      next: "Visit /api/seed?token=leadhunter-setup-2024 to load demo data",
     });
-    results.push("Schema pushed: " + pushOutput.trim());
-  } catch (e: unknown) {
-    return NextResponse.json({ error: "prisma db push failed", details: String(e) }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({
+      error: "Database not ready",
+      details: String(error),
+      hint: "Tables are created during Vercel build (prisma db push). Check that DATABASE_URL is set in Vercel environment variables.",
+    }, { status: 500 });
   }
-
-  return NextResponse.json({ success: true, steps: results, next: "Now visit /api/seed?token=leadhunter-setup-2024 to load demo data" });
 }
