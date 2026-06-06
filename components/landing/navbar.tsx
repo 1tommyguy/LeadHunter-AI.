@@ -18,6 +18,12 @@ export function Navbar() {
 
           <div className="hidden md:flex items-center space-x-8">
             <Link
+              href="#how-it-works"
+              className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+            >
+              How It Works
+            </Link>
+            <Link
               href="#features"
               className="text-gray-600 hover:text-gray-900 text-sm font-medium"
             >
