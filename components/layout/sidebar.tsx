@@ -19,15 +19,15 @@ import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Lead Finder", href: "/dashboard/leads/finder", icon: Search },
-  { name: "My Leads", href: "/dashboard/leads", icon: Users },
-  { name: "Outreach Queue", href: "/dashboard/outreach/queue", icon: InboxIcon },
-  { name: "Campaigns", href: "/dashboard/campaigns", icon: Mail },
-  { name: "CRM", href: "/dashboard/crm", icon: MessageSquare },
-  { name: "Follow-Ups", href: "/dashboard/followups", icon: Bell },
-  { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-  { name: "Subscription", href: "/dashboard/subscription", icon: CreditCard },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  { name: "Lead Finder", href: "/leads/finder", icon: Search },
+  { name: "My Leads", href: "/leads", icon: Users },
+  { name: "Outreach Queue", href: "/outreach/queue", icon: InboxIcon },
+  { name: "Campaigns", href: "/campaigns", icon: Mail },
+  { name: "CRM", href: "/crm", icon: MessageSquare },
+  { name: "Follow-Ups", href: "/followups", icon: Bell },
+  { name: "Analytics", href: "/analytics", icon: BarChart3 },
+  { name: "Subscription", href: "/subscription", icon: CreditCard },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -70,7 +70,7 @@ export function Sidebar() {
           <p className="text-xs font-semibold text-blue-900 mb-1">Free Plan</p>
           <p className="text-xs text-blue-700">10 leads/month</p>
           <Link
-            href="/dashboard/subscription"
+            href="/subscription"
             className="mt-2 block text-xs font-medium text-blue-600 hover:underline"
           >
             Upgrade now →

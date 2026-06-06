@@ -35,7 +35,7 @@ export function TopNav({ user }: TopNavProps) {
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-end px-6 gap-4">
       <Button variant="ghost" size="icon" asChild>
-        <Link href="/dashboard/followups">
+        <Link href="/followups">
           <Bell className="h-5 w-5 text-gray-600" />
         </Link>
       </Button>
@@ -62,7 +62,7 @@ export function TopNav({ user }: TopNavProps) {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/dashboard/settings">
+            <Link href="/settings">
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </Link>
