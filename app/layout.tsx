@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "LeadHunter AI - Find Businesses That Need Websites",
   description:
