@@ -4,9 +4,9 @@ import { execSync } from "child_process";
 export const maxDuration = 60;
 
 export async function GET(req: NextRequest) {
-  const secret = req.nextUrl.searchParams.get("secret");
-  if (!secret || secret !== process.env.NEXTAUTH_SECRET) {
-    return NextResponse.json({ error: "Unauthorized — pass ?secret=YOUR_NEXTAUTH_SECRET" }, { status: 401 });
+  const token = req.nextUrl.searchParams.get("token");
+  if (token !== "leadhunter-setup-2024") {
+    return NextResponse.json({ error: "Pass ?token=leadhunter-setup-2024" }, { status: 401 });
   }
 
   const results: string[] = [];
@@ -22,5 +22,5 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "prisma db push failed", details: String(e) }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true, steps: results, next: "Now visit /api/seed?secret=YOUR_SECRET to load demo data" });
+  return NextResponse.json({ success: true, steps: results, next: "Now visit /api/seed?token=leadhunter-setup-2024 to load demo data" });
 }

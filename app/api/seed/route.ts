@@ -8,10 +8,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Seeding is disabled" }, { status: 403 });
   }
 
-  // Simple secret check so randos can't run it
-  const secret = req.nextUrl.searchParams.get("secret");
-  if (secret !== process.env.NEXTAUTH_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const token = req.nextUrl.searchParams.get("token");
+  if (token !== "leadhunter-setup-2024") {
+    return NextResponse.json({ error: "Pass ?token=leadhunter-setup-2024" }, { status: 401 });
   }
 
   try {
