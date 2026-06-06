@@ -6,6 +6,11 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
+// Sanitize NEXTAUTH_URL in case it was pasted with markdown angle brackets or whitespace
+if (process.env.NEXTAUTH_URL) {
+  process.env.NEXTAUTH_URL = process.env.NEXTAUTH_URL.replace(/[<>]/g, "").trim();
+}
+
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
