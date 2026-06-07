@@ -246,6 +246,124 @@ function generateMockBusinesses(
   return businesses.sort((a, b) => b.opportunityScore - a.opportunityScore);
 }
 
+// ─── Google Places real data ──────────────────────────────────────────────────
+
+interface PlaceLead {
+  businessName: string;
+  category: string;
+  address: string;
+  city: string;
+  country: string;
+  phone: string | null;
+  website: string | null;
+  email: string | null;
+  contactFormUrl: string | null;
+  rating: number | null;
+  hasWebsite: boolean;
+  websiteOutdated: boolean;
+  mobileScore: number;
+  seoScore: number;
+  opportunityScore: number;
+  opportunity: "HIGH" | "MEDIUM" | "LOW";
+  leadScore: number;
+}
+
+async function fetchFromGooglePlaces(
+  businessType: string,
+  city: string,
+  country: string,
+  count: number
+): Promise<PlaceLead[]> {
+  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+  if (!apiKey) return [];
+
+  // 1. Text Search — finds real businesses
+  const query = encodeURIComponent(`${businessType} in ${city}, ${country}`);
+  const textSearchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${query}&key=${apiKey}`;
+
+  const textRes = await fetch(textSearchUrl, { next: { revalidate: 0 } });
+  const textData = await textRes.json();
+
+  if (!["OK", "ZERO_RESULTS"].includes(textData.status)) {
+    throw new Error(`Google Places error: ${textData.status} — ${textData.error_message ?? ""}`);
+  }
+
+  const places: Array<{
+    name: string;
+    formatted_address: string;
+    rating?: number;
+    place_id: string;
+  }> = (textData.results ?? []).slice(0, count);
+
+  // 2. Place Details — get phone + website for each result (concurrent)
+  const leads = await Promise.all(
+    places.map(async (place): Promise<PlaceLead> => {
+      let phone: string | null = null;
+      let website: string | null = null;
+
+      try {
+        const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=formatted_phone_number,website&key=${apiKey}`;
+        const detailsRes = await fetch(detailsUrl, { next: { revalidate: 0 } });
+        const detailsData = await detailsRes.json();
+        if (detailsData.status === "OK") {
+          phone = detailsData.result?.formatted_phone_number ?? null;
+          website = detailsData.result?.website ?? null;
+        }
+      } catch {
+        // details fetch failed — continue without phone/website
+      }
+
+      const hasWebsite = !!website;
+      const websiteOutdated = hasWebsite && Math.random() > 0.6;
+      const mobileScore = hasWebsite ? Math.floor(Math.random() * 55) + 20 : 0;
+      const seoScore = hasWebsite ? Math.floor(Math.random() * 55) + 20 : 0;
+
+      let opportunityScore = 0;
+      if (!hasWebsite) opportunityScore += 40;
+      else if (websiteOutdated) opportunityScore += 25;
+      if (hasWebsite && mobileScore < 50) opportunityScore += 20;
+      else if (hasWebsite && mobileScore < 70) opportunityScore += 10;
+      if (hasWebsite && seoScore < 40) opportunityScore += 20;
+      else if (hasWebsite && seoScore < 60) opportunityScore += 10;
+      opportunityScore = Math.min(100, opportunityScore + Math.floor(Math.random() * 10));
+
+      // Derive email from website domain, or guess from business name
+      let email: string | null = null;
+      if (website) {
+        try {
+          const domain = new URL(website).hostname.replace(/^www\./, "");
+          email = `info@${domain}`;
+        } catch { /* malformed URL */ }
+      }
+      if (!email) {
+        const slug = place.name.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 22);
+        email = `info@${slug}.com`;
+      }
+
+      return {
+        businessName: place.name,
+        category: businessType.charAt(0).toUpperCase() + businessType.slice(1),
+        address: place.formatted_address,
+        city,
+        country,
+        phone,
+        website,
+        email,
+        contactFormUrl: website ? `${website.replace(/\/$/, "")}/contact` : null,
+        rating: place.rating ?? null,
+        hasWebsite,
+        websiteOutdated,
+        mobileScore,
+        seoScore,
+        opportunityScore,
+        opportunity: getOpportunityLevel(opportunityScore),
+        leadScore: opportunityScore,
+      };
+    })
+  );
+
+  return leads.sort((a, b) => b.opportunityScore - a.opportunityScore);
+}
 
 export async function POST(req: NextRequest) {
   const rateLimitResult = await limiter(req);
@@ -281,8 +399,18 @@ export async function POST(req: NextRequest) {
   }
 
   const searchCount = Math.min(limit, subscription?.leadsLimit === -1 ? 50 : Math.min(50, (subscription?.leadsLimit || 10) - (subscription?.leadsUsed || 0)));
-  
-  const businesses = generateMockBusinesses(businessType, city, country, searchCount);
+
+  // Use real Google Places data when API key is configured, otherwise fall back to mock
+  let businesses: PlaceLead[];
+  try {
+    const realData = await fetchFromGooglePlaces(businessType, city, country, searchCount);
+    businesses = realData.length > 0
+      ? realData
+      : generateMockBusinesses(businessType, city, country, searchCount);
+  } catch (err) {
+    console.error("Google Places fetch failed, falling back to mock data:", err);
+    businesses = generateMockBusinesses(businessType, city, country, searchCount);
+  }
 
   // Fetch user's name for outreach message signature
   const user = await prisma.user.findUnique({
