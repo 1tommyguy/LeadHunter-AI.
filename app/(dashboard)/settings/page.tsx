@@ -28,13 +28,29 @@ export default function SettingsPage() {
 
   const saveSmtp = async () => {
     setSmtpLoading(true);
-    const res = await fetch("/api/settings/smtp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...smtpForm, port: parseInt(smtpForm.port) }),
-    });
-    if (res.ok) toast({ title: "SMTP settings saved" });
-    else toast({ title: "Failed to save SMTP settings", variant: "destructive" });
+    try {
+      const res = await fetch("/api/settings/smtp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...smtpForm, port: parseInt(smtpForm.port) }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast({
+          title: "SMTP settings saved successfully!",
+          description: `Your email (${smtpForm.username}) is now connected and ready to send outreach.`,
+        });
+        setSmtpForm(f => ({ ...f, password: "" }));
+      } else {
+        toast({
+          title: "Failed to save SMTP settings",
+          description: data.error || "Please check your details and try again.",
+          variant: "destructive",
+        });
+      }
+    } catch {
+      toast({ title: "Network error", description: "Could not reach server. Try again.", variant: "destructive" });
+    }
     setSmtpLoading(false);
   };
 

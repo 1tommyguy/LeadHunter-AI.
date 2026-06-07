@@ -89,16 +89,17 @@ export function generateOutreachMessage(
     websiteOutdated: boolean;
     mobileScore: number;
     seoScore: number;
-  }
+  },
+  senderName?: string
 ): string {
+  const signature = senderName ? senderName : "[Your Name]";
   const templates: Record<string, string> = {
-    "Website Design": generateWebsiteDesignMessage(lead),
-    "SEO Services": generateSEOMessage(lead),
-    "Digital Marketing": generateDigitalMarketingMessage(lead),
-    "Business Automation": generateAutomationMessage(lead),
+    "Website Design": generateWebsiteDesignMessage(lead, signature),
+    "SEO Services": generateSEOMessage(lead, signature),
+    "Digital Marketing": generateDigitalMarketingMessage(lead, signature),
+    "Business Automation": generateAutomationMessage(lead, signature),
   };
-
-  return templates[template] || generateWebsiteDesignMessage(lead);
+  return templates[template] || generateWebsiteDesignMessage(lead, signature);
 }
 
 function generateWebsiteDesignMessage(lead: {
@@ -108,7 +109,7 @@ function generateWebsiteDesignMessage(lead: {
   hasWebsite: boolean;
   websiteOutdated: boolean;
   mobileScore: number;
-}): string {
+}, signature: string): string {
   if (!lead.hasWebsite) {
     return `Hi ${lead.businessName} team,
 
@@ -126,7 +127,7 @@ I offer affordable packages starting from $499 and can have your site live withi
 Would you be open to a quick 15-minute call to discuss how we can help grow your business online?
 
 Best regards,
-[Your Name]`;
+${signature}`;
   }
 
   if (lead.websiteOutdated || lead.mobileScore < 60) {
@@ -146,7 +147,7 @@ I'd be happy to share a free website audit showing exactly what improvements cou
 Can we schedule a quick call this week?
 
 Best regards,
-[Your Name]`;
+${signature}`;
   }
 
   return `Hi ${lead.businessName} team,
@@ -156,7 +157,7 @@ I specialize in helping ${lead.category} businesses in ${lead.city} attract more
 Would you be interested in a free consultation?
 
 Best regards,
-[Your Name]`;
+${signature}`;
 }
 
 function generateSEOMessage(lead: {
@@ -164,7 +165,7 @@ function generateSEOMessage(lead: {
   category: string;
   city: string;
   seoScore: number;
-}): string {
+}, signature: string): string {
   return `Hi ${lead.businessName} team,
 
 I noticed that your ${lead.category} business in ${lead.city} isn't ranking as highly as it could on Google searches. With targeted SEO improvements, you could be attracting significantly more local customers.
@@ -181,14 +182,14 @@ I recently helped a similar business in your area increase their monthly leads b
 I'd love to share a free SEO audit for your business. When would be a good time to connect?
 
 Best regards,
-[Your Name]`;
+${signature}`;
 }
 
 function generateDigitalMarketingMessage(lead: {
   businessName: string;
   category: string;
   city: string;
-}): string {
+}, signature: string): string {
   return `Hi ${lead.businessName} team,
 
 Are you getting the most out of your digital marketing? Many ${lead.category} businesses in ${lead.city} are missing out on a huge opportunity to reach local customers online.
@@ -205,14 +206,14 @@ I work specifically with ${lead.category} businesses, so I understand your marke
 Would you be interested in a free 30-minute strategy session? I'll share specific ideas for growing your business online.
 
 Best regards,
-[Your Name]`;
+${signature}`;
 }
 
 function generateAutomationMessage(lead: {
   businessName: string;
   category: string;
   city: string;
-}): string {
+}, signature: string): string {
   return `Hi ${lead.businessName} team,
 
 Running a ${lead.category} business in ${lead.city} means wearing many hats. I help businesses like yours automate time-consuming tasks so you can focus on what you do best.
@@ -230,5 +231,5 @@ My clients typically save 10-15 hours per week while increasing customer satisfa
 I'd love to show you a demo of what's possible for your specific business. Are you available for a quick call this week?
 
 Best regards,
-[Your Name]`;
+${signature}`;
 }

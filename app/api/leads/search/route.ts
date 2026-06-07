@@ -101,6 +101,13 @@ export async function POST(req: NextRequest) {
   
   const businesses = generateMockBusinesses(businessType, city, country, searchCount);
 
+  // Fetch user's name for outreach message signature
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { name: true },
+  });
+  const senderName = user?.name || undefined;
+
   // Save leads to database
   const savedLeads = [];
   for (const biz of businesses) {
@@ -121,7 +128,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // Auto-generate outreach message as draft
+      // Auto-generate outreach message as draft signed with the user's name
       const { generateOutreachMessage } = await import("@/lib/lead-scorer");
       const messageContent = generateOutreachMessage("Website Design", {
         businessName: biz.businessName,
@@ -131,7 +138,7 @@ export async function POST(req: NextRequest) {
         websiteOutdated: biz.websiteOutdated,
         mobileScore: biz.mobileScore,
         seoScore: biz.seoScore,
-      });
+      }, senderName);
 
       await prisma.message.create({
         data: {

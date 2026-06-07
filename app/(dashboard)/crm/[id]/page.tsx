@@ -57,8 +57,16 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
   const [msgContent, setMsgContent] = useState("");
   const [msgSubject, setMsgSubject] = useState("");
   const [saving, setSaving] = useState(false);
+  const [senderName, setSenderName] = useState<string | undefined>(undefined);
   const router = useRouter();
   const { toast } = useToast();
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then(r => r.json())
+      .then(d => { if (d.user?.name) setSenderName(d.user.name); })
+      .catch(() => {});
+  }, []);
 
   const fetchLead = async () => {
     setLoading(true);
@@ -67,7 +75,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
       if (!res.ok) { router.push("/crm"); return; }
       const data = await res.json();
       setLead(data);
-      // Pre-fill message
+      // Pre-fill message signed with user's name
       const content = generateOutreachMessage("Website Design", {
         businessName: data.businessName,
         category: data.category,
@@ -76,7 +84,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
         websiteOutdated: data.websiteOutdated,
         mobileScore: data.mobileScore || 0,
         seoScore: data.seoScore || 0,
-      });
+      }, senderName);
       setMsgContent(content);
       setMsgSubject(`Website Services for ${data.businessName}`);
     } finally {
@@ -144,7 +152,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
       websiteOutdated: lead.websiteOutdated,
       mobileScore: lead.mobileScore || 0,
       seoScore: lead.seoScore || 0,
-    });
+    }, senderName);
     setMsgContent(content);
   };
 
