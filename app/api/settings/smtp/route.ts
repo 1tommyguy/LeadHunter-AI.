@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { smtpConfigSchema } from "@/lib/validations";
-import bcrypt from "bcryptjs";
+import { encrypt } from "@/lib/encryption";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const parsed = smtpConfigSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
 
-  const encryptedPass = await bcrypt.hash(parsed.data.password, 10);
+  const encryptedPass = encrypt(parsed.data.password);
 
   const config = await prisma.smtpConfig.upsert({
     where: { userId: session.user.id },

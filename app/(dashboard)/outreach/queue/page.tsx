@@ -88,9 +88,18 @@ export default function OutreachQueuePage() {
 
   const handleSend = async (id: string) => {
     setActionLoading(true);
-    const ok = await updateMessage(id, { status: "SENT" });
-    if (ok) { toast({ title: "Message sent!" }); fetchMessages(); }
-    else toast({ title: "Failed to send", variant: "destructive" });
+    const res = await fetch("/api/messages", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, status: "SENT" }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      toast({ title: "Email sent!", description: "The message has been delivered from your email account." });
+      fetchMessages();
+    } else {
+      toast({ title: "Could not send", description: data.error || "Unknown error", variant: "destructive" });
+    }
     setActionLoading(false);
   };
 
@@ -112,11 +121,21 @@ export default function OutreachQueuePage() {
     if (selected.size === 0) { toast({ title: "Select messages first" }); return; }
     setActionLoading(true);
     let successCount = 0;
+    let failCount = 0;
     for (const id of selected) {
-      const ok = await updateMessage(id, { status: action });
-      if (ok) successCount++;
+      const res = await fetch("/api/messages", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: action }),
+      });
+      if (res.ok) successCount++;
+      else failCount++;
     }
-    toast({ title: `${successCount} messages ${action === "SENT" ? "sent" : "archived"}` });
+    if (action === "SENT") {
+      toast({ title: `${successCount} email${successCount !== 1 ? "s" : ""} sent${failCount > 0 ? `, ${failCount} failed (check SMTP settings)` : ""}` });
+    } else {
+      toast({ title: `${successCount} messages archived` });
+    }
     setSelected(new Set());
     fetchMessages();
     setActionLoading(false);
@@ -263,7 +282,7 @@ export default function OutreachQueuePage() {
           )}
           <DialogFooter>
             {previewMsg?.status === "DRAFT" && (
-              <Button onClick={() => { handleSend(previewMsg.id); setPreviewMsg(null); }}>
+              <Button onClick={() => { const id = previewMsg.id; setPreviewMsg(null); handleSend(id); }}>
                 <Send className="mr-2 h-4 w-4" /> Send Message
               </Button>
             )}

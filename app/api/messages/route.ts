@@ -70,10 +70,47 @@ export async function PATCH(req: NextRequest) {
 
   const message = await prisma.message.findFirst({
     where: { id, userId: session.user.id },
+    include: { lead: { select: { email: true, businessName: true } } },
   });
 
   if (!message) {
     return NextResponse.json({ error: "Message not found" }, { status: 404 });
+  }
+
+  // Actually send via SMTP when status changes to SENT
+  if (status === "SENT") {
+    const smtp = await prisma.smtpConfig.findUnique({ where: { userId: session.user.id } });
+
+    if (!smtp) {
+      return NextResponse.json(
+        { error: "No SMTP settings found. Go to Settings → SMTP / Email to connect your email account." },
+        { status: 400 }
+      );
+    }
+
+    const toEmail = message.lead.email;
+    if (!toEmail) {
+      return NextResponse.json(
+        { error: `No email address found for ${message.lead.businessName}. You can copy the message and contact them manually.` },
+        { status: 400 }
+      );
+    }
+
+    try {
+      const { sendEmail } = await import("@/lib/send-email");
+      await sendEmail({
+        smtp,
+        to: toEmail,
+        subject: message.subject ?? `Partnership Opportunity for ${message.lead.businessName}`,
+        text: content ?? message.content,
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      return NextResponse.json(
+        { error: `Failed to send email: ${message}. Check your SMTP settings in Settings → SMTP / Email.` },
+        { status: 500 }
+      );
+    }
   }
 
   const updated = await prisma.message.update({
@@ -86,7 +123,7 @@ export async function PATCH(req: NextRequest) {
     },
   });
 
-  // If sending, update lead status to CONTACTED
+  // Update lead status to CONTACTED after successful send
   if (status === "SENT") {
     await prisma.lead.update({
       where: { id: message.leadId },
