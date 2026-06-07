@@ -94,6 +94,21 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
 
   useEffect(() => { fetchLead(); }, [id]);
 
+  // Re-generate message once the user's name has loaded (avoids race condition on mount)
+  useEffect(() => {
+    if (!lead || !senderName) return;
+    const content = generateOutreachMessage(msgTemplate, {
+      businessName: lead.businessName,
+      category: lead.category,
+      city: lead.city,
+      hasWebsite: lead.hasWebsite,
+      websiteOutdated: lead.websiteOutdated,
+      mobileScore: lead.mobileScore || 0,
+      seoScore: lead.seoScore || 0,
+    }, senderName);
+    setMsgContent(content);
+  }, [senderName]);
+
   const updateStatus = async (status: string) => {
     await fetch(`/api/leads/${id}`, {
       method: "PATCH",

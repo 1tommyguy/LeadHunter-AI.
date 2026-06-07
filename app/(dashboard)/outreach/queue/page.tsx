@@ -48,7 +48,17 @@ export default function OutreachQueuePage() {
   const [editContent, setEditContent] = useState("");
   const [editSubject, setEditSubject] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+  const [userName, setUserName] = useState<string>("[Your Name]");
   const { toast } = useToast();
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then(r => r.json())
+      .then(d => { if (d.user?.name) setUserName(d.user.name); })
+      .catch(() => {});
+  }, []);
+
+  const applyName = (content: string) => content.replace(/\[Your Name\]/g, userName);
 
   const fetchMessages = useCallback(async () => {
     setLoading(true);
@@ -208,7 +218,7 @@ export default function OutreachQueuePage() {
                       <span className="text-xs text-gray-400">{msg.lead.category} · {msg.lead.city}</span>
                     </div>
                     {msg.subject && <p className="text-sm font-medium text-gray-700 mb-1">Re: {msg.subject}</p>}
-                    <p className="text-sm text-gray-600 line-clamp-2">{msg.content}</p>
+                    <p className="text-sm text-gray-600 line-clamp-2">{applyName(msg.content)}</p>
                     <p className="text-xs text-gray-400 mt-1">
                       Created {formatDate(msg.createdAt)}
                       {msg.sentAt && ` · Sent ${formatDate(msg.sentAt)}`}
@@ -220,7 +230,7 @@ export default function OutreachQueuePage() {
                     </Button>
                     {msg.status === "DRAFT" && (
                       <>
-                        <Button variant="ghost" size="icon" onClick={() => { setEditingMsg(msg); setEditContent(msg.content); setEditSubject(msg.subject || ""); }} title="Edit">
+                        <Button variant="ghost" size="icon" onClick={() => { setEditingMsg(msg); setEditContent(applyName(msg.content)); setEditSubject(msg.subject || ""); }} title="Edit">
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" onClick={() => handleSend(msg.id)} title="Send" className="text-green-600">
@@ -248,7 +258,7 @@ export default function OutreachQueuePage() {
           {previewMsg && (
             <div className="space-y-3">
               {previewMsg.subject && <div><strong>Subject:</strong> {previewMsg.subject}</div>}
-              <div className="whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded-lg border">{previewMsg.content}</div>
+              <div className="whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded-lg border">{applyName(previewMsg.content)}</div>
             </div>
           )}
           <DialogFooter>
