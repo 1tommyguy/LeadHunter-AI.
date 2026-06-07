@@ -217,9 +217,8 @@ function generateMockBusinesses(
     const slug = slugify(businessName);
     const tld = randChoice(rng, config.emailTlds);
     const website = hasWebsite ? `https://www.${slug}${tld}` : null;
-    // Always generate an email — critical for actual sending
-    const emailSlug = slugify(businessName);
-    const email = `info@${emailSlug}${tld}`;
+    // Only set email when there's a real website to derive it from
+    const email = hasWebsite ? `info@${slug}${tld}` : null;
     const contactFormUrl = hasWebsite ? `https://www.${slug}${tld}/contact` : null;
 
     businesses.push({
@@ -327,17 +326,13 @@ async function fetchFromGooglePlaces(
       else if (hasWebsite && seoScore < 60) opportunityScore += 10;
       opportunityScore = Math.min(100, opportunityScore + Math.floor(Math.random() * 10));
 
-      // Derive email from website domain, or guess from business name
+      // Only derive email from a real website domain — never guess a fake one
       let email: string | null = null;
       if (website) {
         try {
           const domain = new URL(website).hostname.replace(/^www\./, "");
           email = `info@${domain}`;
-        } catch { /* malformed URL */ }
-      }
-      if (!email) {
-        const slug = place.name.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 22);
-        email = `info@${slug}.com`;
+        } catch { /* malformed URL — leave email null */ }
       }
 
       return {

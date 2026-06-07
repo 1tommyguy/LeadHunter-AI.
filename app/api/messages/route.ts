@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   const [messages, total] = await Promise.all([
     prisma.message.findMany({
       where,
-      include: { lead: { select: { businessName: true, city: true, category: true } } },
+      include: { lead: { select: { businessName: true, city: true, category: true, email: true } } },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,

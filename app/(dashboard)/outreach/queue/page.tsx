@@ -24,7 +24,7 @@ interface Message {
   type: string;
   createdAt: string;
   sentAt: string | null;
-  lead: { businessName: string; city: string; category: string };
+  lead: { businessName: string; city: string; category: string; email: string | null };
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -242,6 +242,12 @@ export default function OutreachQueuePage() {
                       Created {formatDate(msg.createdAt)}
                       {msg.sentAt && ` · Sent ${formatDate(msg.sentAt)}`}
                     </p>
+                    {!msg.lead.email && msg.status === "DRAFT" && (
+                      <p className="text-xs text-amber-600 mt-1 font-medium">No email found — contact by phone or find their email manually</p>
+                    )}
+                    {msg.lead.email && msg.status === "DRAFT" && (
+                      <p className="text-xs text-gray-400 mt-1">To: {msg.lead.email}</p>
+                    )}
                   </div>
                   <div className="flex gap-1 flex-shrink-0">
                     <Button variant="ghost" size="icon" onClick={() => setPreviewMsg(msg)} title="Preview">
@@ -252,7 +258,12 @@ export default function OutreachQueuePage() {
                         <Button variant="ghost" size="icon" onClick={() => { setEditingMsg(msg); setEditContent(applyName(msg.content)); setEditSubject(msg.subject || ""); }} title="Edit">
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleSend(msg.id)} title="Send" className="text-green-600">
+                        <Button
+                          variant="ghost" size="icon"
+                          onClick={() => msg.lead.email ? handleSend(msg.id) : toast({ title: "No email address", description: "This business has no email. Contact them by phone or find their email on Google/Facebook.", variant: "destructive" })}
+                          title={msg.lead.email ? `Send to ${msg.lead.email}` : "No email address"}
+                          className={msg.lead.email ? "text-green-600" : "text-gray-300 cursor-not-allowed"}
+                        >
                           <Send className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" onClick={() => handleArchive(msg.id)} title="Archive" className="text-gray-400">
