@@ -245,6 +245,44 @@ function generateMockBusinesses(
   return businesses.sort((a, b) => b.opportunityScore - a.opportunityScore);
 }
 
+// ─── Email scraper ────────────────────────────────────────────────────────────
+
+async function scrapeEmailFromWebsite(websiteUrl: string): Promise<string | null> {
+  const base = websiteUrl.replace(/\/$/, "");
+  const emailRegex = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
+  // Skip system/spam emails and image filenames that contain @
+  const skipPattern = /noreply|no-reply|donotreply|example\.|sentry\.|wix\.|wordpress\.|squarespace\.|@2x|\.png|\.jpg|\.svg|\.gif|@schemacache/i;
+
+  const tryPage = async (url: string): Promise<string | null> => {
+    try {
+      const res = await fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; LeadHunterAI/1.0; +https://leadhunter.ai)" },
+        signal: AbortSignal.timeout(4000),
+        next: { revalidate: 0 },
+      });
+      if (!res.ok) return null;
+      const html = await res.text();
+      const matches = html.match(emailRegex) ?? [];
+      return matches.find(e => !skipPattern.test(e) && e.length < 80 && e.includes(".")) ?? null;
+    } catch {
+      return null;
+    }
+  };
+
+  // Check homepage, /contact, and /contact-us concurrently
+  const results = await Promise.allSettled([
+    tryPage(base),
+    tryPage(`${base}/contact`),
+    tryPage(`${base}/contact-us`),
+    tryPage(`${base}/about`),
+  ]);
+
+  for (const r of results) {
+    if (r.status === "fulfilled" && r.value) return r.value.toLowerCase();
+  }
+  return null;
+}
+
 // ─── Google Places real data ──────────────────────────────────────────────────
 
 interface PlaceLead {
@@ -326,13 +364,17 @@ async function fetchFromGooglePlaces(
       else if (hasWebsite && seoScore < 60) opportunityScore += 10;
       opportunityScore = Math.min(100, opportunityScore + Math.floor(Math.random() * 10));
 
-      // Only derive email from a real website domain — never guess a fake one
+      // Try to find a real email by visiting the business's website pages
       let email: string | null = null;
       if (website) {
-        try {
-          const domain = new URL(website).hostname.replace(/^www\./, "");
-          email = `info@${domain}`;
-        } catch { /* malformed URL — leave email null */ }
+        email = await scrapeEmailFromWebsite(website);
+        // If scraping found nothing, fall back to info@domain.com (a reliable guess for businesses with websites)
+        if (!email) {
+          try {
+            const domain = new URL(website).hostname.replace(/^www\./, "");
+            email = `info@${domain}`;
+          } catch { /* malformed URL */ }
+        }
       }
 
       return {
